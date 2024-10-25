@@ -62,22 +62,22 @@ public class Level1Screen implements Screen {
             @Override
             public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
                 System.out.println("Restart button clicked");
-                game.setScreen(new Level1Screen(game)); // Restart Level 1
+                game.setScreen(new Level1Screen(game));
             }
         });
 
         backButton.setSize(50, 50);
         loadButton.setSize(50, 50);
-        restartButton.setSize(50, 50); // Set size for restart button
+        restartButton.setSize(50, 50);
 
         backButton.setPosition(stage.getWidth() - 60, 10);
         loadButton.setPosition(stage.getWidth() - 120, 10);
-        restartButton.setPosition(10, stage.getHeight() - 60); // Position at top left
+        restartButton.setPosition(10, stage.getHeight() - 60);
 
         stage.addActor(mainTable);
         stage.addActor(backButton);
         stage.addActor(loadButton);
-        stage.addActor(restartButton); // Add the restart button to the stage
+        stage.addActor(restartButton);
     }
 
     @Override
@@ -117,6 +117,5 @@ public class Level1Screen implements Screen {
     public void dispose() {
         stage.dispose();
         logoTexture.dispose();
-        // Dispose of the button textures
     }
 }
