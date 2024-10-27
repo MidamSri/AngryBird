@@ -96,7 +96,7 @@ public class SignupScreen implements Screen {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
 
-        mainTable.setSize(200, 100); // Set a size to the table if necessary
+        mainTable.setSize(200, 100);
         mainTable.setPosition(gameport.getWorldWidth() / 2 - 60, gameport.getWorldHeight() / 2 - 370);
     }
 

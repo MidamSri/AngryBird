@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.midam.angrybird.GussaelChidiyaan;
-// import com.midam.angrybird.scenes.HUD; // Uncomment if you want to use HUD
+ import com.midam.angrybird.scenes.HUD;
 
 public class PlayScreen implements Screen {
     private GussaelChidiyaan game;
@@ -19,7 +19,7 @@ public class PlayScreen implements Screen {
     public PlayScreen(GussaelChidiyaan game) {
         this.game = game;
         gameCam = new OrthographicCamera();
-        gamePort = new StretchViewport(1820, 980, gameCam); // Set the StretchViewport
+        gamePort = new StretchViewport(1820, 980, gameCam);
         stage = new Stage(gamePort);
     }
 

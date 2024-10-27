@@ -17,9 +17,11 @@ public class GussaelChidiyaan extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
-         setScreen(new StartingScreen(this));
-    }
 
+        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+
+        setScreen(new StartingScreen(this));
+    }
 
     @Override
     public void render() {
