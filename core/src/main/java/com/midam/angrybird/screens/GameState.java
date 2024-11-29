@@ -1,39 +1,33 @@
 package com.midam.angrybird.screens;
 
+import com.badlogic.gdx.math.Vector2;
+import com.midam.angrybird.praanee.LalChidiyaan;
+import com.midam.angrybird.praanee.Seesha;
+import com.midam.angrybird.praanee.Suar;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameState implements Serializable {
-    private float[][] redBirdPositions; // Array of red bird positions
-    private float[][] suarPositions;   // Array of pig positions
-    private float[][] seeshaPositions; // Array of glass positions
-    private int remainingBirds;        // Remaining birds
-    private boolean isGameOver;        // Game over flag
+    private static final long serialVersionUID = 1L;
 
-    public GameState(float[][] redBirdPositions, float[][] suarPositions, float[][] seeshaPositions, int remainingBirds, boolean isGameOver) {
-        this.redBirdPositions = redBirdPositions;
-        this.suarPositions = suarPositions;
-        this.seeshaPositions = seeshaPositions;
-        this.remainingBirds = remainingBirds;
-        this.isGameOver = isGameOver;
-    }
+    public int currentBirdIndex;
+    public float birdPositionX;
+    public float birdPositionY;
+    public List<Boolean> seeshasVisible;
+    public List<Boolean> suarsVisible;
+    public List<Vector2> seeshasPositions;
+    public List<Vector2> suarsPositions;
 
-    public float[][] getRedBirdPositions() {
-        return redBirdPositions;
-    }
+    public int score;
+    public boolean isLaunched;
+    public Vector2 velocity;
 
-    public float[][] getSuarPositions() {
-        return suarPositions;
-    }
-
-    public float[][] getSeeshaPositions() {
-        return seeshaPositions;
-    }
-
-    public int getRemainingBirds() {
-        return remainingBirds;
-    }
-
-    public boolean isGameOver() {
-        return isGameOver;
+    public GameState() {
+        seeshasVisible = new ArrayList<>();
+        suarsVisible = new ArrayList<>();
+        seeshasPositions = new ArrayList<>();
+        suarsPositions = new ArrayList<>();
     }
 }

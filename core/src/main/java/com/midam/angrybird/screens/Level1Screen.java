@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -24,7 +23,7 @@ import com.midam.angrybird.praanee.LalChidiyaan;
 import com.midam.angrybird.praanee.Seesha;
 import com.midam.angrybird.praanee.Suar;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.physics.box2d.*;
+import com.midam.angrybird.utils.GameStateManager;
 
 
 public class Level1Screen implements Screen {
@@ -341,7 +340,6 @@ public class Level1Screen implements Screen {
             }
         };
 
-        // Add listener to all birds
         for (LalChidiyaan bird : birds) {
             bird.addListener(birdListener);
         }
@@ -360,7 +358,6 @@ public class Level1Screen implements Screen {
     }
 
     private void setupButtons() {
-        // Create back button
         Texture backButtonTexture = new Texture(Gdx.files.internal("goback.png"));
         TextureRegionDrawable backDrawable = new TextureRegionDrawable(backButtonTexture);
         ImageButton backButton = new ImageButton(backDrawable);
@@ -371,14 +368,23 @@ public class Level1Screen implements Screen {
             }
         });
 
-        // Create load button
-        Texture loadButtonTexture = new Texture(Gdx.files.internal("savebutton.png"));
+        Texture saveButtonTexture = new Texture(Gdx.files.internal("savebutton.png"));
+        TextureRegionDrawable saveDrawable = new TextureRegionDrawable(saveButtonTexture);
+        ImageButton saveButton = new ImageButton(saveDrawable);
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                saveGameState("savedlevel/level1_save.dat");
+            }
+        });
+
+        Texture loadButtonTexture = new Texture(Gdx.files.internal("loadbutton.png"));
         TextureRegionDrawable loadDrawable = new TextureRegionDrawable(loadButtonTexture);
         ImageButton loadButton = new ImageButton(loadDrawable);
         loadButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                GussaelChidiyaan.Loaded_Level = 1;
+                loadGameState("savedlevel/level1_save.dat");
             }
         });
 
@@ -393,7 +399,6 @@ public class Level1Screen implements Screen {
             }
         });
 
-        // Create close button
         Texture closeButtonTexture = new Texture(Gdx.files.internal("quitButtonFINAL.png"));
         TextureRegionDrawable closeDrawable = new TextureRegionDrawable(closeButtonTexture);
         ImageButton closeButton = new ImageButton(closeDrawable);
@@ -404,14 +409,15 @@ public class Level1Screen implements Screen {
             }
         });
 
-        // Set button sizes and positions
         backButton.setSize(50, 50);
-        loadButton.setSize(50, 50);
+        saveButton.setSize(50, 50);
+        loadButton.setSize(70, 70);
         restartButton.setSize(50, 50);
         closeButton.setSize(50, 50);
 
         backButton.setPosition(stage.getWidth() - 60, 10);
-        loadButton.setPosition(stage.getWidth() - 120, 10);
+        saveButton.setPosition(stage.getWidth() - 120, 10);
+        loadButton.setPosition(stage.getWidth() - 200, 8);
         restartButton.setPosition(10, stage.getHeight() - 60);
         closeButton.setPosition(stage.getWidth() - 60, stage.getHeight() - 60);
 
@@ -419,6 +425,7 @@ public class Level1Screen implements Screen {
         stage.addActor(mainTable);
         stage.addActor(backButton);
         stage.addActor(loadButton);
+        stage.addActor(saveButton);
         stage.addActor(restartButton);
         stage.addActor(closeButton);
     }
@@ -460,6 +467,60 @@ public class Level1Screen implements Screen {
             showTrajectory = false;
         }
     }
+    private void saveGameState(String fileName) {
+        GameState state = new GameState();
+
+        state.currentBirdIndex = currentBirdIndex;
+        state.birdPositionX = currentBird.getX();
+        state.birdPositionY = currentBird.getY();
+        state.isLaunched = isLaunched;
+        state.velocity = new Vector2(velocity);
+
+        Seesha[] seeshas = {seesha1, seesha2, seesha3};
+        for (Seesha seesha : seeshas) {
+            state.seeshasVisible.add(seesha.isVisible());
+            state.seeshasPositions.add(new Vector2(seesha.getX(), seesha.getY()));
+        }
+
+        Suar[] suars = {suar1, suar2};
+        for (Suar suar : suars) {
+            state.suarsVisible.add(suar.isVisible());
+            state.suarsPositions.add(new Vector2(suar.getX(), suar.getY()));
+        }
+        GameStateManager.saveGameState(state, fileName);
+    }
+
+
+    private void loadGameState(String fileName) {
+        GameState state = GameStateManager.loadGameState(fileName);
+        if (state == null) {
+            System.out.println("Failed to load game state.");
+            return;
+        }
+
+        // Restore bird state
+        currentBirdIndex = state.currentBirdIndex;
+        currentBird = birds[currentBirdIndex];
+        currentBird.setPosition(state.birdPositionX, state.birdPositionY);
+        isLaunched = state.isLaunched;
+        velocity.set(state.velocity);
+
+        // Restore seeshas state
+        Seesha[] seeshas = {seesha1, seesha2, seesha3};
+        for (int i = 0; i < seeshas.length; i++) {
+            seeshas[i].setVisible(state.seeshasVisible.get(i));
+            seeshas[i].setPosition(state.seeshasPositions.get(i).x, state.seeshasPositions.get(i).y);
+        }
+
+        // Restore suars state
+        Suar[] suars = {suar1, suar2};
+        for (int i = 0; i < suars.length; i++) {
+            suars[i].setVisible(state.suarsVisible.get(i));
+            suars[i].setPosition(state.suarsPositions.get(i).x, state.suarsPositions.get(i).y);
+        }
+
+    }
+
 
     private void drawTrajectory() {
         if (!showTrajectory) return;
