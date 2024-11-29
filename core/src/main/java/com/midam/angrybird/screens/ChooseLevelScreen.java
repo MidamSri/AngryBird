@@ -2,6 +2,7 @@ package com.midam.angrybird.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -25,6 +26,7 @@ public class ChooseLevelScreen implements Screen {
     private Texture closeButtonTexture;
     private Texture dummyButton;
     private Table mainTable;
+
 
     public ChooseLevelScreen(GussaelChidiyaan game) {
         this.game = game;
@@ -53,10 +55,10 @@ public class ChooseLevelScreen implements Screen {
                             game.setScreen(new Level1Screen(game));
                             break;
                         case 1:
-                            // game.setScreen(new Level2Screen(game));
+                            game.setScreen(new Level2Screen(game));
                             break;
                         case 2:
-                            // game.setScreen(new Level3Screen(game));
+                            game.setScreen(new Level3Screen(game));
                             break;
                         case 3:
                             // game.setScreen(new Level4Screen(game));
@@ -119,6 +121,9 @@ public class ChooseLevelScreen implements Screen {
         stage.addActor(backButton);
         stage.addActor(closeButton);
         stage.addActor(dummyButton);
+
+
+
     }
 
     @Override

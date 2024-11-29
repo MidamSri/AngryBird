@@ -10,7 +10,7 @@ public class PeeliChidiyaan extends Actor {
 
     public PeeliChidiyaan() {
         // Load your texture here
-        Texture texture = new Texture("YelloBird.png");
+        Texture texture = new Texture("YellowBird.png");
         sprite = new Sprite(texture);
         setSize(sprite.getWidth(), sprite.getHeight());
     }

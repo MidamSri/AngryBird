@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -19,15 +18,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.midam.angrybird.GussaelChidiyaan;
-import com.midam.angrybird.praanee.Gulel;
-import com.midam.angrybird.praanee.LalChidiyaan;
-import com.midam.angrybird.praanee.Seesha;
-import com.midam.angrybird.praanee.Suar;
+import com.midam.angrybird.praanee.*;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.physics.box2d.*;
 
 
-public class Level1Screen implements Screen {
+public class Level3Screen implements Screen {
     private final GussaelChidiyaan game;
     private Music music;
     private Music music2;
@@ -36,17 +31,19 @@ public class Level1Screen implements Screen {
     private Table mainTable;
     public Viewport gameport = StartingScreen.gameport;
 
-    private LalChidiyaan redBird;
-    private LalChidiyaan redBird1;
-    private LalChidiyaan redBird2;
-    private LalChidiyaan[] birds;
-    private LalChidiyaan currentBird;
-    private int currentBirdIndex = 2; // Start with redBird2
+    private NeeliChidiyaan blueBird;
+    private NeeliChidiyaan blueBird1;
+    private NeeliChidiyaan blueBird2;
+    private NeeliChidiyaan[] birds;
+    private NeeliChidiyaan currentBird;
+    private int currentBirdIndex = 2; // Start with blueBird2
 
     private Gulel gulel;
-    private Seesha seesha1;
-    private Seesha seesha2;
-    private Seesha seesha3;
+    private Lakdi Lakdi1;
+    private Lakdi Lakdi2;
+    private Lakdi Lakdi3;
+    private Lakdi Lakdi4;
+
     private Suar suar1;
     private Suar suar2;
 
@@ -78,7 +75,7 @@ public class Level1Screen implements Screen {
     private boolean showTrajectory = false;
     private Vector2 launchVelocity = new Vector2();
 
-    public Level1Screen(GussaelChidiyaan game) {
+    public Level3Screen(GussaelChidiyaan game) {
         this.game = game;
         stage = new Stage(new StretchViewport(1820, 980));
         Gdx.input.setInputProcessor(stage);
@@ -115,22 +112,20 @@ public class Level1Screen implements Screen {
             currentBird.getHeight()
         );
 
-        // Check collision with seeshas
-        Seesha[] seeshas = {seesha1, seesha2, seesha3};
-        for (Seesha seesha : seeshas) {
-            Rectangle seeshaBounds = new Rectangle(
-                seesha.getX(),
-                seesha.getY(),
-                seesha.getWidth(),
-                seesha.getHeight()
+        Lakdi[] Lakdis = {Lakdi1, Lakdi2, Lakdi3, Lakdi4};
+        for (Lakdi Lakdi : Lakdis) {
+            Rectangle LakdiBounds = new Rectangle(
+                Lakdi.getX(),
+                Lakdi.getY(),
+                Lakdi.getWidth(),
+                Lakdi.getHeight()
             );
 
-            if (birdBounds.overlaps(seeshaBounds)) {
-                handleSeeshaCollision(seesha);
+            if (birdBounds.overlaps(LakdiBounds)) {
+                handleLakdiCollision(Lakdi);
             }
         }
 
-        // Check collision with suars
         Suar[] suars = {suar1, suar2};
         for (Suar suar : suars) {
             Rectangle suarBounds = new Rectangle(
@@ -146,13 +141,14 @@ public class Level1Screen implements Screen {
         }
     }
 
-    private void handleSeeshaCollision(Seesha seesha) {
-        seesha.setVisible(false);
-        stage.getActors().removeValue(seesha, true);
+    private void handleLakdiCollision(Lakdi Lakdi) {
+        // Reduce Lakdi health or remove it
+        Lakdi.setVisible(false);
+        stage.getActors().removeValue(Lakdi, true);
     }
 
     private void handleSuarCollision(Suar suar) {
-
+        // Reduce suar health or remove it
         suar.setVisible(false);
         stage.getActors().removeValue(suar, true);
 
@@ -160,13 +156,12 @@ public class Level1Screen implements Screen {
 
     private boolean jeetgye() {
         boolean allBirdsUsed = true;
-        for (LalChidiyaan bird : birds) {
+        for (NeeliChidiyaan bird : birds) {
             if (isLaunched || !isKhatam) {
                 allBirdsUsed = false;
                 break;
             }
         }
-
         Suar[] suars = {suar1, suar2};
         boolean allSuarsDefeated = true;
         for (Suar suar : suars) {
@@ -179,28 +174,22 @@ public class Level1Screen implements Screen {
         return allBirdsUsed && allSuarsDefeated;
     }
 
-
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Update bird animation
         updateBirdAnimation(delta);
 
-        // Update bird's position if launched
         if (isLaunched && !isAnimating) {
             launchTime += delta;
 
-            // Apply projectile motion equations
             position.x += velocity.x * delta;
             position.y += velocity.y * delta + 0.5f * GRAVITY * delta * delta;
 
             // Check collisions
             checkCollisions();
 
-            // If the bird reaches ground, stop motion and switch to next bird
             if (position.y <= 300) {
                 isLaunched = false;
                 velocity.y = 0;
@@ -219,13 +208,11 @@ public class Level1Screen implements Screen {
             return;
         }
 
-        // Draw everything
         game.batch.setProjectionMatrix(stage.getCamera().combined);
         game.batch.begin();
         game.batch.draw(logoTexture, 0, 0, stage.getWidth(), stage.getHeight());
         game.batch.end();
 
-        // Draw the stage and trajectory if enabled
         stage.act();
         stage.draw();
 
@@ -235,21 +222,20 @@ public class Level1Screen implements Screen {
         }
     }
 
-
     private void initializeBirds() {
-        redBird = new LalChidiyaan();
-        redBird.setPosition(100, 300);
-        redBird.setSize(redBird.getWidth() * 0.05f, redBird.getHeight() * 0.05f);
+        blueBird = new NeeliChidiyaan();
+        blueBird.setPosition(100, 300);
+        blueBird.setSize(blueBird.getWidth() * 0.04f, blueBird.getHeight() * 0.04f);
 
-        redBird1 = new LalChidiyaan();
-        redBird1.setPosition(200, 300);
-        redBird1.setSize(redBird.getWidth(), redBird.getHeight());
+        blueBird1 = new NeeliChidiyaan();
+        blueBird1.setPosition(200, 300);
+        blueBird1.setSize(blueBird.getWidth(), blueBird.getHeight());
 
-        redBird2 = new LalChidiyaan();
-        redBird2.setPosition(CIRCLE_CENTER_X, CIRCLE_CENTER_Y);
-        redBird2.setSize(redBird.getWidth(), redBird.getHeight());
+        blueBird2 = new NeeliChidiyaan();
+        blueBird2.setPosition(CIRCLE_CENTER_X, CIRCLE_CENTER_Y);
+        blueBird2.setSize(blueBird.getWidth(), blueBird.getHeight());
 
-        birds = new LalChidiyaan[]{redBird, redBird1, redBird2};
+        birds = new NeeliChidiyaan[]{blueBird, blueBird1, blueBird2};
         currentBird = birds[currentBirdIndex];
 
         // Store positions for animation
@@ -261,26 +247,33 @@ public class Level1Screen implements Screen {
         gulel = new Gulel();
         gulel.setPosition(300, 300);
 
-        seesha1 = new Seesha();
-        seesha1.setPosition(1200, 360);
-        seesha1.setRotation(90);
-        seesha1.setSize(seesha1.getWidth() * 0.075f, seesha1.getHeight() * 0.075f);
+        Lakdi1 = new Lakdi();
+        Lakdi1.setPosition(1100, 360);
+        Lakdi1.setRotation(90);
+        Lakdi1.setSize(Lakdi1.getWidth() * 0.14f, Lakdi1.getHeight() * 0.14f);
 
-        seesha2 = new Seesha();
-        seesha2.setPosition(1200, 490);
-        seesha2.setRotation(90);
-        seesha2.setSize(seesha1.getWidth(), seesha1.getHeight());
+        Lakdi2 = new Lakdi();
+        Lakdi2.setPosition(1200, 360);
+        Lakdi2.setRotation(90);
+        Lakdi2.setSize(Lakdi1.getWidth(), Lakdi1.getHeight());
 
-        seesha3 = new Seesha();
-        seesha3.setPosition(1200, 563);
-        seesha3.setSize(seesha1.getWidth(), seesha1.getHeight());
+        Lakdi3 = new Lakdi();
+        Lakdi3.setPosition(1300, 360);
+        Lakdi3.setRotation(90);
+        Lakdi3.setSize(Lakdi1.getWidth(), Lakdi1.getHeight());
+
+        Lakdi4 = new Lakdi();
+        Lakdi4.setPosition(1400, 360);
+        Lakdi4.setRotation(90);
+        Lakdi4.setSize(Lakdi1.getWidth(), Lakdi1.getHeight());
+
 
         suar1 = new Suar();
-        suar1.setPosition(1200, 580);
+        suar1.setPosition(1400, 300);
         suar1.setSize(suar1.getWidth() * 0.2f, suar1.getHeight() * 0.2f);
 
         suar2 = new Suar();
-        suar2.setPosition(1300, 580);
+        suar2.setPosition(1200, 300);
         suar2.setSize(suar1.getWidth(), suar1.getHeight());
     }
 
@@ -342,19 +335,20 @@ public class Level1Screen implements Screen {
         };
 
         // Add listener to all birds
-        for (LalChidiyaan bird : birds) {
+        for (NeeliChidiyaan bird : birds) {
             bird.addListener(birdListener);
         }
     }
 
     private void addActorsToStage() {
         stage.addActor(gulel);
-        stage.addActor(redBird);
-        stage.addActor(redBird1);
-        stage.addActor(redBird2);
-        stage.addActor(seesha1);
-        stage.addActor(seesha2);
-        stage.addActor(seesha3);
+        stage.addActor(blueBird);
+        stage.addActor(blueBird1);
+        stage.addActor(blueBird2);
+        stage.addActor(Lakdi1);
+        stage.addActor(Lakdi2);
+        stage.addActor(Lakdi3);
+        stage.addActor(Lakdi4);
         stage.addActor(suar1);
         stage.addActor(suar2);
     }
@@ -389,7 +383,7 @@ public class Level1Screen implements Screen {
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new Level1Screen(game));
+                game.setScreen(new Level3Screen(game));
             }
         });
 
@@ -484,6 +478,52 @@ public class Level1Screen implements Screen {
         shapeRenderer.end();
     }
 
+//    @Override
+//    public void render(float delta) {
+//        Gdx.gl.glClearColor(1, 1, 1, 1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//
+//        // Update bird animation
+//        updateBirdAnimation(delta);
+//
+//        // Update bird's position if launched
+//        if (isLaunched && !isAnimating) {
+//            launchTime += delta;
+//
+//            // Apply projectile motion equations
+//            position.x += velocity.x * delta;
+//            position.y += velocity.y * delta + 0.5f * GRAVITY * delta * delta;
+//
+//            // If the bird reaches ground, stop motion and switch to next bird
+//            if (position.y <= 300) {
+//                isLaunched = false;
+//                velocity.y = 0;
+//                position.y = 300;
+//                isKhatam = true;
+//                currentBird.setPosition(position.x, position.y);
+//                switchToNextBird();
+//            } else {
+//                velocity.y += GRAVITY * delta;
+//                currentBird.setPosition(position.x, position.y);
+//            }
+//        }
+//
+//        // Draw everything
+//        game.batch.setProjectionMatrix(stage.getCamera().combined);
+//        game.batch.begin();
+//        game.batch.draw(logoTexture, 0, 0, stage.getWidth(), stage.getHeight());
+//        game.batch.end();
+//
+//        // Draw the stage and trajectory if enabled
+//        stage.act();
+//        stage.draw();
+//
+//        if (showTrajectory) {
+//            shapeRenderer.setProjectionMatrix(stage.getCamera().combined);
+//            drawTrajectory();
+//        }
+//    }
+
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
@@ -509,14 +549,15 @@ public class Level1Screen implements Screen {
         logoTexture.dispose();
         music.dispose();
 
-        for (LalChidiyaan bird : birds) {
+        for (NeeliChidiyaan bird : birds) {
             bird.dispose();
         }
 
         gulel.dispose();
-        seesha1.dispose();
-        seesha2.dispose();
-        seesha3.dispose();
+        Lakdi1.dispose();
+        Lakdi2.dispose();
+        Lakdi3.dispose();
+        Lakdi4.dispose();
         suar1.dispose();
         suar2.dispose();
     }

@@ -2,6 +2,8 @@ package com.midam.angrybird;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.midam.angrybird.screens.StartingScreen;
 
@@ -14,9 +16,15 @@ public class GussaelChidiyaan extends Game {
     public SpriteBatch batch;
     public static int Loaded_Level = 1;
 
+    public static AssetManager manager;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
+        manager = new AssetManager();
+        manager.load("music/title_theme.mp3", Music.class);
+        manager.load("music/ambient_green_jungleish.mp3", Music.class);
+        manager.finishLoading();
 
         Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
@@ -24,8 +32,7 @@ public class GussaelChidiyaan extends Game {
     }
 
     @Override
-    public void render() {
-        super.render();
+    public void render() {super.render();
     }
 
     @Override

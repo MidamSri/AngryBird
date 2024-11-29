@@ -2,6 +2,7 @@ package com.midam.angrybird.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,6 +24,7 @@ public class StartingScreen implements Screen {
     private Table mainTable;
     public static OrthographicCamera gamecam;
     public static Viewport gameport;
+    private Music music;
 
     public StartingScreen(GussaelChidiyaan game) {
         this.game = game;
@@ -80,6 +82,10 @@ public class StartingScreen implements Screen {
         stage.addActor(closeButton);
         closeButton.setSize(100, 100);
         closeButton.setPosition(stage.getWidth() - 110, stage.getHeight() - 110);
+
+        music = GussaelChidiyaan.manager.get("music/title_theme.mp3", Music.class);
+        music.setLooping(true);
+        music.play();
     }
 
     @Override
